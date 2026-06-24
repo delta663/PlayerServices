@@ -7,7 +7,6 @@
 - **Admin Tools**
   - Observe mode and player tracking.
   - Force clan create, join, and leave commands.
-  - Stone Form apply/remove tools.
   - Potion buff apply tool.
   - Centralized config reload without restarting the server.
 
@@ -170,26 +169,6 @@
   - Apply potion buffs to a target player.
   - Shortcut: *.pls bf <player>*
   - Example: *.pls bf Del*
-
-- `.pls stoneform <player>`
-  - Apply Stone Form to a target player.
-  - Shortcut: *.pls sf <player>*
-  - Example: *.pls sf Del*
-
-- `.pls stoneformradius <radius>`
-  - Apply Stone Form to players within a radius.
-  - Shortcut: *.pls sfr <radius>*
-  - Example: *.pls sfr 20*
-
-- `.pls restoneform <player>`
-  - Remove Stone Form from a target player.
-  - Shortcut: *.pls rsf <player>*
-  - Example: *.pls rsf Del*
-
-- `.pls restoneformradius <radius>`
-  - Remove Stone Form from players within a radius.
-  - Shortcut: *.pls rsfr <radius>*
-  - Example: *.pls rsfr 20*
 
 #### Player Profiles
 - `.pls checkplayer <Name/SteamID>`
