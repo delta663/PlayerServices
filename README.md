@@ -23,14 +23,14 @@ Server-side V Rising utility mod that adds player services such as player info, 
   - Admins can rename players directly.
 
 - **Player Profiles**
-  - Tracks player SteamID, current in-game name, Known As name, level data, clan data, castle data, aura ownership, kit claim status, and last online time.
+  - Tracks player SteamID, current in-game name, Known As, level data, clan data, castle data, aura ownership, kit claim status, and last online time.
   - Supports admin lookup by player name, SteamID, or Known As.
   - Supports blacklist and whitelist management.
 
 - **Player Information**
   - `.pis` command is an upgraded version of the popular `.pi` command that many PvP players are already familiar with.
   - Admins can configure whether clan castle information and offline clan member last online times are shown to players.
-  - Admins can always see full .pis information, including clan data, current level, highest level reached, castle ownership, online clan members, and the last online time of offline members.
+  - Admins can always see full `.pis` information, including clan data, current level, highest level reached, castle ownership, online clan members, and the last online time of offline members.
 
 - **Blacklist Players**
   - Designed for public servers.
@@ -359,7 +359,7 @@ Important sections include:
 - **ChangeName**: Enable/disable name changes, configure currency cost, broadcasts, and Discord webhook messages.
 - **Whitelist**: Enable/disable whitelist-only mode.
 - **WelcomeMessage**: Enable/disable welcome messages and configure messages sent when players connect.
-- **Aura**: Enable/disable aura system, configure aura prefab GUIDs, aura costs, currencies, and broadcast messages.
+- **Aura**: Enable/disable the aura system, configure aura prefab GUIDs, aura costs, currencies, and broadcast messages.
 - **Teleport**: Enable/disable player teleport and configure teleport delay.
 
 ### player_data.json
