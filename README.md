@@ -15,7 +15,7 @@ Server-side V Rising utility mod that adds player services such as player info, 
   - Players can preview an aura before buying it.
   - Players can enable or disable owned auras.
   - Admins can grant or remove auras from players.
-  - [Examples of auras that can be used.](https://docs.google.com/spreadsheets/d/1SDk_sXa2gTPuOzP8ikWq-xD91dRlleRdaPqNNEIcwRU/edit?gid=1667870331#gid=1667870331)
+  - [Examples of auras that can be used.](https://docs.google.com/spreadsheets/d/1SDk_sXa2gTPuOzP8ikWq-xD91dRlleRdaPqNNEIcwRU/edit?gid=1667870331)
 
 - **Change Name**
   - Players can change their character name for a configurable currency cost.
