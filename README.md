@@ -1,13 +1,13 @@
 # PlayerServices
 
-**PlayerServices** is a server-side V Rising mod that combines player utility features, admin tools, player profile tracking, starter and daily kits, give sets, teleport points, aura purchases, name changes, blacklist/whitelist management, and Discord webhook support.
+Server-side V Rising utility mod that adds player services such as player info, starter/daily kits, give sets, teleport points, aura purchases, name change, blacklist/whitelist, and admin tools.
 
 ## Features
 
 - **Admin Tools**
   - Observe mode and player tracking.
   - Force clan create, join, and leave commands.
-  - Potion buff apply tool.
+  - Potion buff tool.
   - Centralized config reload without restarting the server.
 
 - **Aura System**
@@ -29,7 +29,8 @@
 
 - **Player Information**
   - `.pis` command is an upgraded version of the popular `.pi` command that many PvP players are already familiar with.
-  - Displays detailed player information, including clan data, current level, highest level reached, castle ownership, online clan members, and the last online time of offline members.
+  - Admins can configure whether clan castle information and offline clan member last online times are shown to players.
+  - Admins can always see full .pis information, including clan data, current level, highest level reached, castle ownership, online clan members, and the last online time of offline members.
 
 - **Blacklist Players**
   - Designed for public servers.
@@ -38,9 +39,9 @@
 
 - **Whitelist System**
   - Designed for private servers only.
-  - Only players listed in `player_data.json` are allowed to connect to the server.
-  - You can pre-register players using the command: `.pls whitelist <SteamID> <KnownAs>`.
-  - Blacklisted players are always blocked, even if they exist in `player_data.json`.
+  - When whitelist-only mode is enabled, only players marked as whitelisted are allowed to connect to the server.
+  - You can pre-register players using the command: `.pls addwhitelist <SteamID> <KnownAs>`.
+  - Blacklisted players are always blocked, even if they match the whitelist requirement.
 
 - **Teleport Points**
   - Admins can create teleport slots.
@@ -82,17 +83,48 @@
 
 **Most commands use the `.pls` prefix, which stands for `PlayerServices`. But if it's easier, just remember it as "please". The server won't actually be more cooperative, but it feels more polite.**
 
-### Player Commands
-
+#### Player Info
+- `.pis <player>`
+  - Show player information.
+  - Example: *.pis Del*
+  
 #### Starter Kit
 - `.pls starterkit`
-  - Claim your one-time starter kit.
+  - Claim your one-time starter kit if auto-grant fails.
   - Shortcut: *.pls sk*
+
+- `.pls addstarterkit <prefabGuid> <quantity>` 🔒 *Admin only*
+  - Add or update an item in the starter kit.
+  - Shortcut: *.pls ask <prefabGuid> <quantity>*
+  - Example: *.pls ask 800879747 1*
+
+- `.pls removestarterkit <prefabGuid>` 🔒 *Admin only*
+  - Remove an item from the starter kit.
+  - Shortcut: *.pls rsk <prefabGuid>*
+  - Example: *.pls rsk 800879747*
+
+- `.pls liststarterkit` 🔒 *Admin only*
+  - Show all starter kit items.
+  - Shortcut: *.pls lsk*
 
 #### Daily Kit
 - `.pls dailykit`
   - Claim your daily kit.
   - Shortcut: *.pls dk*
+  
+- `.pls adddailykit <prefabGuid> <quantity>` 🔒 *Admin only*
+  - Add or update an item in the daily kit.
+  - Shortcut: *.pls adk <prefabGuid> <quantity>*
+  - Example: *.pls adk 800879747 1*
+
+- `.pls removedailykit <prefabGuid>` 🔒 *Admin only*
+  - Remove an item from the daily kit.
+  - Shortcut: *.pls rdk <prefabGuid>*
+  - Example: *.pls rdk 800879747*
+
+- `.pls listdailykit` 🔒 *Admin only*
+  - Show all daily kit items.
+  - Shortcut: *.pls ldk*
 
 #### Teleport
 - `.pls tp <slot>`
@@ -100,10 +132,23 @@
   - Non-admin players can only use teleport points that are not admin-only.
   - Example: *.pls tp 1*
 
-#### Player Info
-- `.pis <player>`
-  - Show player information.
-  - Example: *.pis Del*
+- `.pls helptp`
+  - Show teleport point commands and feature status.
+  - Shortcut: *.pls htp*
+
+- `.pls addtp <slot> [adminOnly] [description]` 🔒 *Admin only*
+  - Add a teleport point at your current position.
+  - Shortcut: *.pls atp <slot> [adminOnly] [description]*
+  - Example: *.pls atp 1 false "Admin shop"*
+
+- `.pls removetp <slot>` 🔒 *Admin only*
+  - Remove a teleport point.
+  - Shortcut: *.pls rtp <slot>*
+  - Example: *.pls rtp 1*
+
+- `.pls listtp` 🔒 *Admin only*
+  - List all teleport points.
+  - Shortcut: *.pls ltp*
 
 #### Change Name
 - `.changename to <NewName>`
@@ -114,21 +159,30 @@
 - `.changename help`
   - Show change name help and cost.
   - Shortcut: *.cn help*
+  
+- `.changename player <currentName> <newName>` 🔒 *Admin only*
+  - Change another player's character name.
+  - Shortcut: *.cn player <currentName> <newName>*
+  - Example: *.cn player Del Led*
+
+- `.changename testwebhook` 🔒 *Admin only*
+  - Send a test message to Discord.
+  - Shortcut: *.cn tw*
 
 #### Aura
 - `.aura on <id>`
-  - Enable an owned aura.
+  - Turn on an owned aura.
   - Example: *.aura on 1*
 
 - `.aura on all`
-  - Enable all owned auras.
+  - Turn on all owned auras.
 
 - `.aura off <id>`
-  - Disable an owned aura.
+  - Turn off an owned aura.
   - Example: *.aura off 1*
 
 - `.aura off all`
-  - Disable all owned auras.
+  - Turn off all owned auras.
 
 - `.aura preview <id>`
   - Preview an aura for a short time before buying it.
@@ -144,19 +198,23 @@
 - `.aura help`
   - Show aura commands and feature status.
 
+- `.aura add <player> <id>` 🔒 *Admin only*
+  - Grant an aura to a player.
+  - Example: *.aura add Del 1*
+
+- `.aura remove <player> <id>` 🔒 *Admin only*
+  - Remove an aura from a player.
+  - Example: *.aura remove Del 1*
+
 ### Admin Commands
 
-#### General Admin
-- `.pls reload`
-  - Reload all PlayerServices configs.
-  - Shortcut: *.pls rl*
-
+#### General Admin 🔒 *Admin only*
 - `.pls observe`
   - Toggle admin observe mode.
   - Shortcut: *.pls ob*
 
 - `.pls track <player>`
-  - Track a player while in observe mode.
+  - Continuously track a player while in observe mode.
   - Shortcut: *.pls tr <player>*
   - Example: *.pls tr Del*
 
@@ -166,11 +224,15 @@
   - Example: *.pls utr*
 
 - `.pls buff <player>`
-  - Apply potion buffs to a target player.
+  - Apply Potion Buffs to a target player or yourself.
   - Shortcut: *.pls bf <player>*
   - Example: *.pls bf Del*
 
-#### Player Profiles
+- `.pls reload`
+  - Reload all PlayerServices configs.
+  - Shortcut: *.pls rl*
+
+#### Player Profiles 🔒 *Admin only*
 - `.pls checkplayer <Name/SteamID>`
   - Check a player profile by current in-game name or SteamID.
   - Shortcut: *.pls cp <Name/SteamID>*
@@ -191,57 +253,46 @@
   - Shortcut: *.pls rka <Name/SteamID>*
   - Example: *.pls rka 1234567890*
 
-#### Blacklist & Whitelist
-- `.pls blacklist <Name/SteamID>`
-  - Add a player to the blacklist.
-  - Shortcut: *.pls bl <Name/SteamID>*
-  - Example: *.pls bl Del*
+#### Blacklist 🔒 *Admin only*
+- `.pls addblacklist <Name/SteamID>`
+  - Add a player to the blacklist and kick them.
+  - Shortcut: *.pls abl <Name/SteamID>*
+  - Example: *.pls abl Del*
 
-- `.pls unblacklist <Name/SteamID>`
+- `.pls removeblacklist <Name/SteamID>`
   - Remove a player from the blacklist.
-  - Shortcut: *.pls ubl <Name/SteamID>*
-  - Example: *.pls ubl Del*
+  - Shortcut: *.pls rbl <Name/SteamID>*
+  - Example: *.pls rbl Del*
 
 - `.pls showblacklist`
   - Show all blacklisted players.
   - Shortcut: *.pls sbl*
 
-- `.pls whitelist <SteamID> <KnownAs>`
+- `.pls helpblacklist`
+  - Show blacklist commands.
+  - Shortcut: *.pls hbl*
+
+#### Whitelist 🔒 *Admin only*
+- `.pls addwhitelist <SteamID> <KnownAs>`
   - Pre-register a SteamID and Known As to the whitelist.
-  - Shortcut: *.pls wl <SteamID> <KnownAs>*
-  - Example: *.pls wl 1234567890 Del*
+  - Shortcut: *.pls awl <SteamID> <KnownAs>*
+  - Example: *.pls awl 1234567890 Del*
 
-#### Starter Kit
-- `.pls starterkitadd <prefabGuid> <quantity>`
-  - Add or update an item in the starter kit.
-  - Shortcut: *.pls ska <prefabGuid> <quantity>*
-  - Example: *.pls ska 800879747 1*
+- `.pls removewhitelist <SteamID/KnownAs>`
+  - Remove a player from the whitelist.
+  - This removes whitelist access but keeps the player's profile and Known As.
+  - Shortcut: *.pls rwl <SteamID/KnownAs>*
+  - Example: *.pls rwl Del*
 
-- `.pls starterkitremove <prefabGuid>`
-  - Remove an item from the starter kit.
-  - Shortcut: *.pls skrm <prefabGuid>*
-  - Example: *.pls skrm 800879747*
+- `.pls showwhitelist`
+  - Show all whitelisted players.
+  - Shortcut: *.pls swl*
 
-- `.pls starterkitlist`
-  - Show all starter kit items.
-  - Shortcut: *.pls skl*
+- `.pls helpwhitelist`
+  - Show whitelist commands and feature status.
+  - Shortcut: *.pls hwl*
 
-#### Daily Kit
-- `.pls dailykitadd <prefabGuid> <quantity>`
-  - Add or update an item in the daily kit.
-  - Shortcut: *.pls dka <prefabGuid> <quantity>*
-  - Example: *.pls dka 800879747 1*
-
-- `.pls dailykitremove <prefabGuid>`
-  - Remove an item from the daily kit.
-  - Shortcut: *.pls dkrm <prefabGuid>*
-  - Example: *.pls dkrm 800879747*
-
-- `.pls dailykitlist`
-  - Show all daily kit items.
-  - Shortcut: *.pls dkl*
-
-#### Give Sets
+#### Give Sets 🔒 *Admin only*
 - `.pls give <player> <setName> [multiplier]`
   - Give a set to a specific player.
   - Shortcut: *.pls g <player> <setName> [multiplier]*
@@ -257,59 +308,25 @@
   - Shortcut: *.pls gc <player> <setName> [multiplier]*
   - Example: *.pls gc Del potion*
 
-- `.pls giveadd <setName> <itemPrefab> <quantity>`
+- `.pls addgive <setName> <itemPrefab> <quantity>`
   - Add an item to a give set.
-  - Shortcut: *.pls ga <setName> <itemPrefab> <quantity>*
-  - Example: *.pls ga potion 800879747 1*
+  - Shortcut: *.pls ag <setName> <itemPrefab> <quantity>*
+  - Example: *.pls ag potion 800879747 1*
 
-- `.pls giveremove <setName>`
+- `.pls removegive <setName>`
   - Remove a give set.
-  - Shortcut: *.pls grm <setName>*
-  - Example: *.pls grm potion*
+  - Shortcut: *.pls rg <setName>*
+  - Example: *.pls rg potion*
 
-- `.pls givelist`
+- `.pls listgive`
   - List all give sets.
-  - Shortcut: *.pls gl*
+  - Shortcut: *.pls lg*
 
-- `.pls givehelp`
+- `.pls helpgive`
   - Show give command help.
-  - Shortcut: *.pls gh*
+  - Shortcut: *.pls hg*
 
-#### Teleport Point
-- `.pls tpadd <slot> [adminOnly] [description]`
-  - Add a teleport point at your current position.
-  - Shortcut: *.pls tpa <slot> [adminOnly] [description]*
-  - Example: *.pls tpadd 1 false "Admin shop"*
-
-- `.pls tpremove <slot>`
-  - Remove a teleport point.
-  - Shortcut: *.pls tprm <slot>*
-  - Example: *.pls tprm 1*
-
-- `.pls tplist`
-  - List all teleport points.
-  - Shortcut: *.pls tpl*
-
-#### Aura
-- `.aura add <player> <id>`
-  - Grant an aura to a player.
-  - Example: *.aura add Del 1*
-
-- `.aura remove <player> <id>`
-  - Remove an aura from a player.
-  - Example: *.aura remove Del 1*
-
-#### Change Name
-- `.changename player <currentName> <newName>`
-  - Change another player's character name.
-  - Shortcut: *.cn player <currentName> <newName>*
-  - Example: *.cn player Del Led*
-
-- `.changename testwebhook`
-  - Send a test message to Discord.
-  - Shortcut: *.cn tw*
-
-#### Clan
+#### Clan 🔒 *Admin only*
 - `.clan forcecreate <player>`
   - Force a player to create their own clan.
   - Shortcut: *.c fc <player>*
@@ -336,39 +353,33 @@ After the first server start, the following files will be created:
 This file contains the main feature toggles and settings.
 
 Important sections include:
-- `PlayerInformations`
-  - Enable/disable the `.pis` command.
-- `StarterKit`
-  - Enable/disable starter kits and configure starter kit items.
-- `DailyKit`
-  - Enable/disable daily kits and configure daily kit items.
-- `ChangeName`
-  - Enable/disable name changes, configure currency cost, broadcasts, and Discord webhook messages.
-- `Whitelist`
-  - Enable/disable whitelist-only mode.
-- `WelcomeMessage`
-  - Enable/disable welcome messages and configure messages sent when players connect.
-- `Aura`
-  - Enable/disable aura system, Configure aura prefab GUIDs, aura costs, currencies, and broadcast messages.
-- `Teleport`
-  - Enable/disable player teleport and configure teleport delay.
+- **PlayerInformations**: Enable/disable the `.pis` command, configure whether clan castle information is shown, and configure whether last online time is shown for offline clan members.
+- **StarterKit**: Enable/disable starter kits and configure starter kit items.
+- **DailyKit**: Enable/disable daily kits and configure daily kit items.
+- **ChangeName**: Enable/disable name changes, configure currency cost, broadcasts, and Discord webhook messages.
+- **Whitelist**: Enable/disable whitelist-only mode.
+- **WelcomeMessage**: Enable/disable welcome messages and configure messages sent when players connect.
+- **Aura**: Enable/disable aura system, configure aura prefab GUIDs, aura costs, currencies, and broadcast messages.
+- **Teleport**: Enable/disable player teleport and configure teleport delay.
 
 ### player_data.json
 This file stores player profile data.
 
 It may include:
-- SteamID
-- Current in-game name
-- Known As
-- Level data
-- Clan data
-- Castle region data
-- Starter kit and daily kit state
-- Aura ownership and active states
-- Blacklist status
-- Last online time
+- **SteamID**
+- **in-game name**
+- **Known As**
+- **Current level**
+- **Max level**
+- **Castle region**
+- **Last online time**
+- **Last DailyKit claim**
+- **StarterKit claim**
+- **Blacklist status**
+- **Whitelist status**
+- **Aura ownership and active states**
 
-> Do not edit `player_data.json` unless you know exactly what you are doing.
+Do not edit `player_data.json` unless you know exactly what you are doing.
 
 ## Security Notes
 - Keep `player_data.json` private. It contains SteamIDs and server profile data.
@@ -377,13 +388,15 @@ It may include:
 - Do not upload real server config, player data, logs, or webhook URLs publicly.
 
 ## Credits
-- [KindredCommands](https://thunderstore.io/c/v-rising/p/odjit/KindredCommands/) by **odjit** for the original code that inspired this mod.
-- Special thanks to [**odjit**](https://thunderstore.io/c/v-rising/p/odjit/) and the [**V Rising Modding Community**](https://discord.com/invite/QG2FmueAG9).
+- [KindredCommands](https://thunderstore.io/c/v-rising/p/odjit/KindredCommands/) by **odjit** for the original codebase and architecture that inspired this mod.
+- [Bloodcraft](https://thunderstore.io/c/v-rising/p/zfolmt/Bloodcraft/) by **zfolmt** for the original PlayerConnectionPatch implementation.
+- [RaidForge](https://thunderstore.io/c/v-rising/p/Darrean/RaidForge/) by **Darrean** for the Raid Time checking logic.
+- [V Rising Modding Community](https://discord.com/invite/QG2FmueAG9)
 
 ## License
 This project is licensed under the AGPL-3.0 license.
 
 ## Notes
-> - This mod was first developed for my own server and was built to combine several small player-service features into one server-side utility mod.
+> - This mod was originally developed for my own server and built on top of [KindredCommands](https://thunderstore.io/c/v-rising/p/odjit/KindredCommands/). Special thanks to **odjit** for the amazing mod and inspiration behind this project.
 > - If you have any problems or run into bugs, please report them to me in the [V Rising Modding Community](https://discord.com/invite/QG2FmueAG9).
 > **Del** (delta_663)
