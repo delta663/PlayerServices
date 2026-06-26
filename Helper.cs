@@ -19,24 +19,6 @@ namespace PlayerServices;
 
 internal static partial class Helper
 {
-	public static AdminAuthSystem adminAuthSystem = Core.Server.GetExistingSystemManaged<AdminAuthSystem>();
-	public static ClanSystem_Server clanSystem = Core.Server.GetExistingSystemManaged<ClanSystem_Server>();
-	public static EntityCommandBufferSystem entityCommandBufferSystem = Core.Server.GetExistingSystemManaged<EntityCommandBufferSystem>();
-
-	public static PrefabGUID GetPrefabGUID(Entity entity)
-	{
-		var entityManager = Core.EntityManager;
-		PrefabGUID guid;
-		try
-		{
-			guid = entityManager.GetComponentData<PrefabGUID>(entity);
-		}
-		catch
-		{
-			guid = new PrefabGUID(0);
-		}
-		return guid;
-	}
 
 	public static NativeArray<Entity> GetEntitiesByComponentType<T1>(bool includeAll = false, bool includeDisabled = false, bool includeSpawn = false, bool includePrefab = false, bool includeDestroyed = false)
 	{
@@ -55,96 +37,6 @@ internal static partial class Helper
 
 		var entities = query.ToEntityArray(Allocator.Temp);
 		return entities;
-	}
-
-	public static NativeArray<Entity> GetEntitiesByComponentTypes<T1, T2>(bool includeAll = false, bool includeDisabled = false, bool includeSpawn = false, bool includePrefab = false, bool includeDestroyed = false)
-	{
-		EntityQueryOptions options = EntityQueryOptions.Default;
-		if (includeAll) options |= EntityQueryOptions.IncludeAll;
-		if (includeDisabled) options |= EntityQueryOptions.IncludeDisabled;
-		if (includeSpawn) options |= EntityQueryOptions.IncludeSpawnTag;
-		if (includePrefab) options |= EntityQueryOptions.IncludePrefab;
-		if (includeDestroyed) options |= EntityQueryOptions.IncludeDestroyTag;
-
-		var entityQueryBuilder = new EntityQueryBuilder(Allocator.Temp)
-			.AddAll(new(Il2CppType.Of<T1>(), ComponentType.AccessMode.ReadWrite))
-			.AddAll(new(Il2CppType.Of<T2>(), ComponentType.AccessMode.ReadWrite))
-			.WithOptions(options);
-
-		var query = Core.EntityManager.CreateEntityQuery(ref entityQueryBuilder);
-
-		var entities = query.ToEntityArray(Allocator.Temp);
-		return entities;
-	}
-
-	public static IEnumerable<Entity> GetAllEntitiesInRadius<T>(float2 center, float radius)
-	{
-		var spatialData = Core.GenerateCastle._TileModelLookupSystemData;
-		var tileModelSpatialLookupRO = spatialData.GetSpatialLookupReadOnlyAndComplete(Core.GenerateCastle);
-
-		var gridPos = ConvertPosToTileGrid(center);
-
-		var gridPosMin = ConvertPosToTileGrid(center - radius);
-		var gridPosMax = ConvertPosToTileGrid(center + radius);
-		var bounds = new BoundsMinMax(Mathf.FloorToInt(gridPosMin.x), Mathf.FloorToInt(gridPosMin.y),
-									  Mathf.CeilToInt(gridPosMax.x), Mathf.CeilToInt(gridPosMax.y));
-
-		var entities = tileModelSpatialLookupRO.GetEntities(ref bounds, TileType.All);
-		foreach (var entity in entities)
-		{
-			if (!entity.Has<T>()) continue;
-			if (!entity.Has<Translation>()) continue;
-			var pos = entity.Read<Translation>().Value;
-			if (math.distance(center, pos.xz) <= radius)
-			{
-				yield return entity;
-			}
-		}
-		entities.Dispose();
-	}
-
-	public static Entity FindClosestTilePosition(Vector3 pos, bool ignoreFloors = false)
-	{
-		var spatialData = Core.GenerateCastle._TileModelLookupSystemData;
-		var tileModelSpatialLookupRO = spatialData.GetSpatialLookupReadOnlyAndComplete(Core.GenerateCastle);
-
-		var gridPos = ConvertPosToTileGrid(pos);
-		var bounds = new BoundsMinMax((int)(gridPos.x - 2.5), (int)(gridPos.z - 2.5),
-									  (int)(gridPos.x + 2.5), (int)(gridPos.z + 2.5));
-
-		var closestEntity = Entity.Null;
-		var closestDistance = float.MaxValue;
-		var entities = tileModelSpatialLookupRO.GetEntities(ref bounds, TileType.All);
-		for (var i = 0; i < entities.Length; ++i)
-		{
-			var entity = entities[i];
-			if (!entity.Has<TilePosition>()) continue;
-			if (!entity.Has<Translation>()) continue;
-			if (ignoreFloors && entity.Has<CastleFloor>()) continue;
-			var entityPos = entity.Read<Translation>().Value;
-			var distance = math.distancesq(pos, entityPos);
-			if (distance < closestDistance)
-			{
-				var prefabName = GetPrefabGUID(entity).LookupName();
-				if (!prefabName.StartsWith("TM_")) continue;
-
-				closestDistance = distance;
-				closestEntity = entity;
-			}
-		}
-		entities.Dispose();
-
-		return closestEntity;
-	}
-
-	public static float2 ConvertPosToTileGrid(float2 pos)
-	{
-		return new float2(Mathf.FloorToInt(pos.x * 2) + 6400, Mathf.FloorToInt(pos.y * 2) + 6400);
-	}
-
-	public static float3 ConvertPosToTileGrid(float3 pos)
-	{
-		return new float3(Mathf.FloorToInt(pos.x * 2) + 6400, pos.y, Mathf.FloorToInt(pos.z * 2) + 6400);
 	}
 
 	public static bool TryGetInventoryEntity(Entity characterEntity, out Entity inventoryEntity)
@@ -181,28 +73,6 @@ internal static partial class Helper
             }
         }
         return sum;
-    }
-
-    public static int GetEmptyInventorySlotsCount(Entity characterEntity)
-    {
-        var em = Core.EntityManager;
-        if (!TryGetInventoryEntity(characterEntity, out var inv))
-            return 0;
-
-        if (!em.HasComponent<InventoryBuffer>(inv))
-            return 0;
-
-        var buffer = em.GetBuffer<InventoryBuffer>(inv);
-        int emptyCount = 0;
-
-        for (int i = 0; i < buffer.Length; i++)
-        {
-            if (buffer[i].ItemType.GuidHash == 0)
-            {
-                emptyCount++;
-            }
-        }
-        return emptyCount;
     }
 
     public static Entity AddItemToInventory(Entity recipient, PrefabGUID guid, int amount)
