@@ -24,7 +24,7 @@ internal static class AuraService
     private const int AURA_COOLDOWN_SECONDS = 5;
     private const int AURA_PREVIEW_SECONDS = 10;
     private const int AURAS_PER_LIST_REPLY = 6;
-    private const float AFTER_CONNECT_REPLY = 2f;
+    private const float AFTER_CONNECT_DELAY = 2f;
 
 	private static readonly Dictionary<(ulong SteamId, int AuraGuid), DateTime> _auraPreviewUntil = new();
     private static readonly Dictionary<ulong, DateTime> _auraToggleCooldowns = new();
@@ -75,7 +75,7 @@ internal static class AuraService
 
     private static IEnumerator RefreshOnConnectRoutine(Entity userEntity, ulong steamId)
     {
-        yield return new WaitForSeconds(AFTER_CONNECT_REPLY);
+        yield return new WaitForSeconds(AFTER_CONNECT_DELAY);
 
         try
         {
@@ -148,7 +148,7 @@ internal static class AuraService
 
     private static IEnumerator RemoveAuraBuffsOnConnectRoutine(Entity userEntity, ulong steamId)
     {
-        yield return new WaitForSeconds(AFTER_CONNECT_REPLY);
+        yield return new WaitForSeconds(AFTER_CONNECT_DELAY);
 
         try
         {
