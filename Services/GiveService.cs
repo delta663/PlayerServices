@@ -66,7 +66,7 @@ internal static class GiveService
         SaveToDisk();
         string label = ResolveItemLabel(guid, itemPrefab);
         ctx.Reply($"Added <color=#87CEFA>{label} ×{quantity}</color> to give set <color=white>{setName}</color>.");
-        Core.Log.LogInfo($"[Give] Added {label} x{quantity} to {setName}");
+        Core.Log.LogInfo($"[Give] Added {label} x{quantity} to {setName}.");
     }
 
     public static void RemoveGiveSet(ChatCommandContext ctx, string setName)
@@ -76,7 +76,7 @@ internal static class GiveService
         {
             SaveToDisk();
             ctx.Reply($"Removed give set <color=white>{setName}</color>.");
-            Core.Log.LogInfo($"[Give] Removed set {setName}");
+            Core.Log.LogInfo($"[Give] Removed set {setName}.");
         }
         else
         {
@@ -95,7 +95,7 @@ internal static class GiveService
         foreach (var kvp in _giveSets)
         {
             var sb = new StringBuilder();
-            sb.Append($"Give sets <color=#87CEFA>{kvp.Key}</color>:\n");
+            sb.Append($"Give set <color=#87CEFA>{kvp.Key}</color>:\n");
             
             var items = new List<string>();
             foreach (var entry in kvp.Value)
