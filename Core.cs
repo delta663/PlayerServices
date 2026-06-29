@@ -10,7 +10,6 @@ using Unity.Entities;
 using UnityEngine;
 using ProjectM.CastleBuilding;
 
-
 namespace PlayerServices;
 
 internal static class Core
