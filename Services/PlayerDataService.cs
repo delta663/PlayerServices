@@ -138,11 +138,6 @@ internal static class PlayerDataService
 			profileChanged = true;
 		}
 
-		if (UpdateLastOnline(data, user))
-		{
-			profileChanged = true;
-		}
-
 		if (data.InGameName != charName)
 		{
 			data.InGameName = charName;
@@ -170,30 +165,6 @@ internal static class PlayerDataService
 		}
 
 		return profileChanged;
-	}
-
-    private static bool UpdateLastOnline(PlayerCacheData data, User user)
-	{
-		if (!user.IsConnected)
-		{
-			long lastOnlineTicks = GetLastConnectedUtcTicks(user.TimeLastConnected);
-
-			if (lastOnlineTicks > 0 && data.LastOnlineTicks != lastOnlineTicks)
-			{
-				data.LastOnlineTicks = lastOnlineTicks;
-				return true;
-			}
-
-			return false;
-		}
-
-		if (data.LastOnlineTicks == 0)
-		{
-			data.LastOnlineTicks = DateTime.UtcNow.Ticks;
-			return true;
-		}
-
-		return false;
 	}
 
 	private static int GetCurrentPlayerLevel(User user, int fallbackLevel)
@@ -295,7 +266,7 @@ internal static class PlayerDataService
                 InGameName = string.Empty, 
                 KnownAs = string.Empty,
                 LastDailyKitClaim = string.Empty,
-                IsBlacklisted = false,
+                IsBanned = false,
                 IsWhitelisted = false
             };
             _cache[steamId] = data;
@@ -316,12 +287,12 @@ internal static class PlayerDataService
         return null;
     }
     
-    public static List<PlayerCacheData> GetBlacklistedPlayers()
+    public static List<PlayerCacheData> GetBannedPlayers()
     {
         var list = new List<PlayerCacheData>();
         foreach (var cache in _cache.Values)
         {
-            if (cache.IsBlacklisted)
+            if (cache.IsBanned)
             {
                 list.Add(cache);
             }
@@ -342,63 +313,55 @@ internal static class PlayerDataService
     // Last Online
     // ---------------------------------------------------------------------
 
-	public static long GetLastConnectedUtcTicks(long rawTimeLastConnected)
-	{
-		if (rawTimeLastConnected <= 0)
-			return 0;
+    public static void RecordDisconnectedUser(User user)
+    {
+	    if (user.PlatformId == 0)
+		    return;
 
-		try
-		{
-			var time = DateTime.FromBinary(rawTimeLastConnected);
+	    var cache = GetPlayerCache(user.PlatformId);
 
-			if (time.Kind == DateTimeKind.Utc)
-				return time.Ticks;
+	    if (cache == null)
+	    {
+		    if (Plugin.onlyWhitelistEnable.Value)
+			    return;
 
-			if (time.Kind == DateTimeKind.Local)
-				return time.ToUniversalTime().Ticks;
+		    cache = GetOrCreatePlayerCache(user.PlatformId);
+	    }
 
-			return DateTime.SpecifyKind(time, DateTimeKind.Utc).Ticks;
-		}
-		catch
-		{
-			try
-			{
-				return new DateTime(rawTimeLastConnected, DateTimeKind.Utc).Ticks;
-			}
-			catch
-			{
-				return 0;
-			}
-		}
-	}
+	    string currentName = user.CharacterName.ToString();
 
-    public static TimeSpan GetTimeSinceLastOnline(long lastOnlineUtcTicks, long fallbackRawTimeLastConnected = 0)
-	{
-		long utcTicks = lastOnlineUtcTicks;
+	    if (!string.IsNullOrWhiteSpace(currentName) && cache.InGameName != currentName)
+	    {
+		    cache.InGameName = currentName;
+	    }
 
-		if (utcTicks <= 0 && fallbackRawTimeLastConnected > 0)
-		{
-			utcTicks = GetLastConnectedUtcTicks(fallbackRawTimeLastConnected);
-		}
+	    cache.LastOnlineTicks = DateTime.UtcNow.Ticks;
 
-		if (utcTicks <= 0)
-			return TimeSpan.Zero;
+	    SaveNow();
 
-		try
-		{
-			var lastOnlineUtc = new DateTime(utcTicks, DateTimeKind.Utc);
-			var elapsed = DateTime.UtcNow - lastOnlineUtc;
+	    Core.Log.LogInfo($"[Disconnected] Player disconnected: {currentName} ({user.PlatformId}) | LastOnlineTicks updated");
+    }
 
-			if (elapsed < TimeSpan.Zero)
-				return TimeSpan.Zero;
+    public static TimeSpan GetTimeSinceLastOnline(long lastOnlineUtcTicks)
+    {
+	    if (lastOnlineUtcTicks <= 0)
+		    return TimeSpan.Zero;
 
-			return elapsed;
-		}
-		catch
-		{
-			return TimeSpan.Zero;
-		}
-	}
+	    try
+	    {
+		    var lastOnlineUtc = new DateTime(lastOnlineUtcTicks, DateTimeKind.Utc);
+		    var elapsed = DateTime.UtcNow - lastOnlineUtc;
+
+		    if (elapsed < TimeSpan.Zero)
+			    return TimeSpan.Zero;
+
+		    return elapsed;
+	    }
+	    catch
+	    {
+		    return TimeSpan.Zero;
+	    }
+    }
 
     // ---------------------------------------------------------------------
     // Find Player
