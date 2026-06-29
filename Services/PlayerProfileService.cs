@@ -14,7 +14,7 @@ internal static class PlayerProfileService
 
         string knownAsDisplay = string.IsNullOrWhiteSpace(cache.KnownAs) ? "<color=yellow>Not Set</color>" : $"<color=green>{cache.KnownAs}</color>";
         string inGameNameDisplay = string.IsNullOrWhiteSpace(cache.InGameName) ? "<color=yellow>Unknown</color>" : $"<color=white>{cache.InGameName}</color>";
-        string blacklistStatus = cache.IsBlacklisted? "<color=red>Yes</color>" : "<color=green>No</color>";
+        string banStatus = cache.IsBanned ? "<color=red>Yes</color>" : "<color=green>No</color>";
         string whitelistStatus = cache.IsWhitelisted? "<color=green>Yes</color>" : "<color=red>No</color>";
 
         var sb = new StringBuilder();
@@ -22,7 +22,7 @@ internal static class PlayerProfileService
         sb.AppendLine($"SteamID: {cache.SteamID}");
         sb.AppendLine($"In-Game Name: {inGameNameDisplay}");
         sb.AppendLine($"Known As: {knownAsDisplay}");
-        sb.AppendLine($"Blacklisted: {blacklistStatus}");
+        sb.AppendLine($"Banned: {banStatus}");
         sb.AppendLine($"Whitelisted: {whitelistStatus}");
 
         ctx.Reply(sb.ToString().TrimEnd());
@@ -74,8 +74,8 @@ internal static class PlayerProfileService
 
             string statusText = "";
 
-            if (match.IsBlacklisted)
-                statusText += " | <color=red>Blacklisted</color>";
+            if (match.IsBanned)
+                statusText += " | <color=red>Banned</color>";
 
             if (match.IsWhitelisted)
                 statusText += " | <color=green>Whitelisted</color>";
@@ -109,7 +109,7 @@ internal static class PlayerProfileService
 
         cache.KnownAs = string.Empty;
 
-        if (string.IsNullOrWhiteSpace(cache.InGameName) && !cache.IsBlacklisted && !cache.IsWhitelisted && cache.LastOnlineTicks == 0)
+        if (string.IsNullOrWhiteSpace(cache.InGameName) && !cache.IsBanned && !cache.IsWhitelisted && cache.LastOnlineTicks == 0)
         {
 	        PlayerDataService.RemovePlayerCache(cache.SteamID);
         }
