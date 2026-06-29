@@ -14,7 +14,7 @@ namespace PlayerServices.Services;
 
 internal static class AdminService
 {
-    private static readonly Dictionary<ulong, (Entity AdminChar, Entity TargetChar)> _trackers = new();
+    private static readonly Dictionary<ulong, (Entity AdminUserEntity, Entity AdminChar, Entity TargetUserEntity, Entity TargetChar, string TargetName)> _trackers = new();
     private static bool _trackingMonitorRunning = false;
 
     private const float TRACKING_INTERVAL = 0.04f;
@@ -24,38 +24,56 @@ internal static class AdminService
     // Monitor Tracking
     // ---------------------------------------------------------------------
 
-	private static IEnumerator TrackPlayerRoutine(ChatCommandContext ctx, ulong adminSteamId, Entity adminChar, Entity targetChar, User targetUser, float delay)
-	{
-		if (delay > 0f)
-			yield return new WaitForSeconds(delay);
+    private static IEnumerator TrackPlayerRoutine(
+	    ChatCommandContext ctx,
+	    ulong adminSteamId,
+	    Entity adminUserEntity,
+	    Entity adminChar,
+	    Entity targetUserEntity,
+	    Entity targetChar,
+	    User targetUser,
+	    float delay)
+    {
+	    if (delay > 0f)
+		    yield return new WaitForSeconds(delay);
 
-		try
-		{
-			var em = Core.EntityManager;
+	    try
+	    {
+		    var em = Core.EntityManager;
+		    string targetName = targetUser.CharacterName.ToString();
 
-			if (adminChar == Entity.Null || !em.Exists(adminChar) || !em.HasComponent<Translation>(adminChar) ||
-				targetChar == Entity.Null || !em.Exists(targetChar) || !em.HasComponent<Translation>(targetChar) ||
-				!BuffUtility.HasBuff(em, adminChar, PrefabData.Observe))
-			{
-				Core.Log.LogWarning($"[Admin] Failed to start tracking {targetUser.CharacterName} after delay.");
-				yield break;
-			}
+		    if (!TryReadConnectedUser(em, adminUserEntity, out _))
+			    yield break;
 
-			_trackers[adminSteamId] = (adminChar, targetChar);
-			EnsureTrackingMonitorRunning();
+		    if (!TryReadConnectedUser(em, targetUserEntity, out _))
+		    {
+			    Helper.NotifyUser(adminUserEntity, $"<color=yellow>Tracking stopped:</color> <color=white>{targetName}</color> is offline.");
+			    yield break;
+		    }
 
-			var targetPos = targetChar.Read<Translation>().Value;
-			adminChar.Write(new Translation { Value = targetPos });
+		    if (adminChar == Entity.Null || !em.Exists(adminChar) || !em.HasComponent<Translation>(adminChar) ||
+			    targetChar == Entity.Null || !em.Exists(targetChar) || !em.HasComponent<Translation>(targetChar) ||
+			    !BuffUtility.HasBuff(em, adminChar, PrefabData.Observe))
+		    {
+			    Core.Log.LogWarning($"[Admin] Failed to start tracking {targetName} after delay.");
+			    yield break;
+		    }
 
-			ctx.Reply($"<color=yellow>Now tracking:</color> <color=white>{targetUser.CharacterName}</color>");
-			ctx.Reply("Usage: <color=green>.pls track <player></color> to track others or <color=green>.pls untrack</color> to stop.");
-			ctx.Reply("Usage: <color=green>.pls observe</color> to toggle Observe mode and untrack.");
-		}
-		catch (Exception e)
-		{
-			Core.LogException(e);
-		}
-	}
+		    _trackers[adminSteamId] = (adminUserEntity, adminChar, targetUserEntity, targetChar, targetName);
+		    EnsureTrackingMonitorRunning();
+
+		    var targetPos = targetChar.Read<Translation>().Value;
+		    adminChar.Write(new Translation { Value = targetPos });
+
+		    ctx.Reply($"<color=yellow>Now tracking:</color> <color=white>{targetName}</color>");
+		    ctx.Reply("Usage: <color=green>.pls track <player></color> to track others or <color=green>.pls untrack</color> to stop.");
+		    ctx.Reply("Usage: <color=green>.pls observe</color> to toggle Observe mode and untrack.");
+	    }
+	    catch (Exception e)
+	    {
+		    Core.LogException(e);
+	    }
+    }
 
     private static void EnsureTrackingMonitorRunning()
     {
@@ -92,38 +110,66 @@ internal static class AdminService
 	}
 
     private static void MonitorTrackingTick()
-	{
-		var em = Core.EntityManager;
-		var toRemove = new List<ulong>();
+    {
+	    var em = Core.EntityManager;
+	    var toRemove = new List<ulong>();
 
-		foreach (var kvp in _trackers)
-		{
-			ulong adminId = kvp.Key;
-			var (adminChar, targetChar) = kvp.Value;
+	    foreach (var kvp in _trackers)
+	    {
+		    ulong adminId = kvp.Key;
+		    var (adminUserEntity, adminChar, targetUserEntity, targetChar, targetName) = kvp.Value;
 
-			if (adminChar == Entity.Null || targetChar == Entity.Null ||
-				!em.Exists(adminChar) || !em.Exists(targetChar) ||
-				!BuffUtility.HasBuff(em, adminChar, PrefabData.Observe))
-			{
-				toRemove.Add(adminId);
-				continue;
-			}
+		    if (!TryReadConnectedUser(em, adminUserEntity, out _))
+		    {
+			    toRemove.Add(adminId);
+			    continue;
+		    }
 
-			if (!em.HasComponent<Translation>(adminChar) || !em.HasComponent<Translation>(targetChar))
-			{
-				toRemove.Add(adminId);
-				continue;
-			}
+		    if (!TryReadConnectedUser(em, targetUserEntity, out _))
+		    {
+			    Helper.NotifyUser(adminUserEntity, $"<color=yellow>Tracking stopped:</color> <color=white>{targetName}</color> is offline.");
+			    toRemove.Add(adminId);
+			    continue;
+		    }
 
-			var targetPos = targetChar.Read<Translation>().Value;
-			adminChar.Write(new Translation { Value = targetPos });
-		}
+		    if (adminChar == Entity.Null || targetChar == Entity.Null ||
+			    !em.Exists(adminChar) || !em.Exists(targetChar) ||
+			    !BuffUtility.HasBuff(em, adminChar, PrefabData.Observe))
+		    {
+			    toRemove.Add(adminId);
+			    continue;
+		    }
 
-		foreach (var adminId in toRemove)
-		{
-			_trackers.Remove(adminId);
-		}
-	}
+		    if (!em.HasComponent<Translation>(adminChar) || !em.HasComponent<Translation>(targetChar))
+		    {
+			    toRemove.Add(adminId);
+			    continue;
+		    }
+
+		    var targetPos = targetChar.Read<Translation>().Value;
+		    adminChar.Write(new Translation { Value = targetPos });
+	    }
+
+	    foreach (var adminId in toRemove)
+	    {
+		    _trackers.Remove(adminId);
+	    }
+    }
+
+    private static bool TryReadConnectedUser(EntityManager em, Entity userEntity, out User user)
+    {
+	    user = default;
+
+	    if (userEntity == Entity.Null ||
+		    !em.Exists(userEntity) ||
+		    !em.HasComponent<User>(userEntity))
+	    {
+		    return false;
+	    }
+
+	    user = em.GetComponentData<User>(userEntity);
+	    return user.IsConnected;
+    }
 
     // ---------------------------------------------------------------------
     // Observe, Track
@@ -198,7 +244,7 @@ internal static class AdminService
             addedObserveBuff = true;
         }
 
-        Core.StartCoroutine(TrackPlayerRoutine(ctx, adminSteamId, adminChar, targetChar, targetUser, addedObserveBuff ? 0.2f : 0f));
+        Core.StartCoroutine(TrackPlayerRoutine(ctx, adminSteamId, adminUserEntity, adminChar, targetUserEntity, targetChar, targetUser, addedObserveBuff ? 0.2f : 0f));
     }
     
     public static void UntrackPlayer(ChatCommandContext ctx)
@@ -243,7 +289,7 @@ internal static class AdminService
 
         ctx.Reply($"Applied <color=yellow>Potion Buffs</color> to <color=white>{playerName}</color>.");
         Helper.NotifyUser(targetUserEntity, "You have received <color=green>Potion Buffs</color>.");
-        Core.Log.LogInfo($"[Admin] {ctx.Event.SenderUserEntity.Read<User>().CharacterName} applied Potion Buffs to {playerName}");
+        Core.Log.LogInfo($"[Admin] {ctx.Event.SenderUserEntity.Read<User>().CharacterName} applied Potion Buffs to {playerName}.");
 
         Core.StartCoroutine(ApplyBuffsRoutine(targetUserEntity, targetCharEntity));
     }
