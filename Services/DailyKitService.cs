@@ -48,7 +48,7 @@ internal static class DailyKitService
 		{
 			existingItem.Quantity = quantity;
 			ctx.Reply($"Updated daily kit item <color=#87CEFA>{label}</color> to <color=#FFD700>{quantity}</color>.");
-			Core.Log.LogInfo($"[DailyKit] Updated daily kit item {label} ({prefabGuid}) to {quantity}");
+			Core.Log.LogInfo($"[DailyKit] Updated daily kit item {label} ({prefabGuid}) to {quantity}.");
 		}
 		else
 		{
@@ -66,7 +66,7 @@ internal static class DailyKitService
         if (removedCount > 0)
         {
             ctx.Reply($"Removed item <color=#87CEFA>{prefabGuid}</color> from the daily kit.");
-            Core.Log.LogInfo($"[DailyKit] Removed item {prefabGuid} from the daily kit");
+            Core.Log.LogInfo($"[DailyKit] Removed item {prefabGuid} from the daily kit.");
             SaveToConfig();
         }
         else
@@ -221,7 +221,7 @@ internal static class DailyKitService
         if (successCount == 0)
         {
             ctx.Reply("<color=red>Failed to give the daily kit.</color> An error occurred.");
-            Core.Log.LogError($"[DailyKit] Failed to give the daily kit to {playerName}");
+            Core.Log.LogError($"[DailyKit] Failed to give the daily kit to {playerName}.");
             CsvLogger.LogRow(steamId, playerName, "fail");
             return;
         }
@@ -230,7 +230,7 @@ internal static class DailyKitService
         PlayerDataService.SaveData();
 
         ctx.Reply("<color=green>Successfully claimed your daily kit.</color>");
-        Core.Log.LogInfo($"[DailyKit] {playerName} has claimed a daily kit");
+        Core.Log.LogInfo($"[DailyKit] {playerName} has claimed a daily kit.");
         CsvLogger.LogRow(steamId, playerName, "success");
     }
 
