@@ -196,12 +196,12 @@ internal static class PlayerInfoService
 	    var maxLevel = cache != null ? cache.MaxLevel : 0;
 
 	    string lastOnline = "";
-
-	    if (!usr.IsConnected && showClanMemberLastOnline)
-	    {
-		    TimeSpan lastSeen = PlayerDataService.GetTimeSinceLastOnline(cache?.LastOnlineTicks ?? 0, usr.TimeLastConnected);
-		    lastOnline = $" ({FormatTimeAgo(lastSeen)})";
-	    }
+		
+		if (!usr.IsConnected && showClanMemberLastOnline && cache != null && cache.LastOnlineTicks > 0)
+		{
+			TimeSpan lastSeen = PlayerDataService.GetTimeSinceLastOnline(cache.LastOnlineTicks);
+			lastOnline = $" ({FormatTimeAgo(lastSeen)})";
+		}
 
 	    return $"[<color=yellow>{maxLevel}</color>] {nameColored}{lastOnline}";
     }
