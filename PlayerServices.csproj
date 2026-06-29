@@ -2,7 +2,7 @@
   <PropertyGroup>
     <TargetFramework>net6.0</TargetFramework>
     <AssemblyName>PlayerServices</AssemblyName>
-    <Description>Server-side V Rising utility mod that adds player services such as player info, starter/daily kits, give sets, teleport points, aura purchases, name change, blacklist/whitelist, and admin tools.</Description>
+    <Description>Server-side V Rising mod that adds player services, including player info, starter kits, daily kits, give sets, teleport points, aura purchases, name changes, banlist, whitelist, and admin tools</Description>
     <Version>1.0.0</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <LangVersion>latest</LangVersion>
