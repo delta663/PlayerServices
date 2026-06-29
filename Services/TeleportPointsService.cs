@@ -123,7 +123,7 @@ internal static class TeleportPointsService
         Save();
 
         ctx.Reply($"Removed <color=white>tp {slot}</color>.");
-        Core.Log.LogInfo($"[Teleport] Removed slot {slot}.");
+        Core.Log.LogInfo($"[Teleport] Removed slot {slot}");
     }
 
     public static void List(ChatCommandContext ctx)
@@ -176,7 +176,7 @@ internal static class TeleportPointsService
         
             if (ctx.Event.User.IsAdmin)
             {
-                sb.AppendLine("<color=green>.pls addtp <slot> <true/false> [description]</color>");
+                sb.AppendLine("<color=green>.pls addtp <slot> [true/false] [description]</color>");
                 sb.AppendLine("<color=green>.pls removetp <slot></color>");
 				sb.AppendLine("<color=green>.pls listtp</color>");
             }
