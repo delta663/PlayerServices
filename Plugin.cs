@@ -1,4 +1,4 @@
-﻿using BepInEx;
+using BepInEx;
 using BepInEx.Unity.IL2CPP;
 using BepInEx.Logging;
 using HarmonyLib;
@@ -100,7 +100,7 @@ public class Plugin : BasePlugin
         auraCosts = Config.Bind("Aura","AuraCosts","100,200,300,400,500,600,700,800,900,0,0","Comma-separated aura costs. The order must match AuraPrefabGuids. Cost must be greater than 0 to allow purchase; use 0 to make that aura admin-only/not for sale. Example: 100,0,300");
         auraPrefabGuids = Config.Bind("Aura","AuraPrefabGuids","-1242403012,-1887712500,-1083643277,1343911070,784366378,1237097606,647429443,-646349605,-1124645803,-1640482518,1163490655","Comma-separated aura prefab GUIDs. The order must match AuraCosts, AuraCurrencyName, and AuraCurrencyPrefabGuid.");
         
-        playerTeleportEnabled = Config.Bind("Teleport", "PlayerTeleportEnabled", true, "Enable players to use .pls tp where AdminOnly is false. Admins can still teleport.");
+        playerTeleportEnabled = Config.Bind("Teleport", "PlayerTeleportEnabled", false, "Enable players to use .pls tp where AdminOnly is false. Admins can still teleport.");
 		playerTeleportDelaySeconds = Config.Bind("Teleport", "PlayerTeleportDelaySeconds", 10, new ConfigDescription("Delay in seconds before player teleport. Set to 0 for instant teleport.", new AcceptableValueRange<int>(0, 20)));
 
         Harmony = new Harmony(MyPluginInfo.PLUGIN_GUID);
