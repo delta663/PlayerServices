@@ -1,12 +1,12 @@
 # PlayerServices
 
-Server-side V Rising utility mod that adds player services such as player info, starter/daily kits, give sets, teleport points, aura purchases, name change, blacklist/whitelist, and admin tools.
+Server-side V Rising utility mod that adds player services such as player info, starter/daily kits, give sets, teleport points, aura purchases, name change, banlist/whitelist, and admin tools.
 
 ## Features
 
 - **Admin Tools**
   - Observe mode and player tracking.
-  - Force clan create, join, and leave commands.
+  - Force clan create, force join, and force leave commands.
   - Potion buff tool.
   - Centralized config reload without restarting the server.
 
@@ -25,23 +25,23 @@ Server-side V Rising utility mod that adds player services such as player info, 
 - **Player Profiles**
   - Tracks player SteamID, current in-game name, Known As, level data, clan data, castle data, aura ownership, kit claim status, and last online time.
   - Supports admin lookup by player name, SteamID, or Known As.
-  - Supports blacklist and whitelist management.
+  - Supports banlist and whitelist management.
 
 - **Player Information**
   - `.pis` command is an upgraded version of the popular `.pi` command that many PvP players are already familiar with.
   - Admins can configure whether clan castle information and offline clan member last online times are shown to players.
   - Admins can always see full `.pis` information, including clan data, current level, highest level reached, castle ownership, online clan members, and the last online time of offline members.
 
-- **Blacklist Players**
+- **Banlist**
   - Designed for public servers.
-  - Add players to the blacklist to prevent them from connecting to the server.
-  - All other players can connect normally.
+  - Ban players to prevent them from connecting to the server.
+  - Banned players are kicked immediately if they are online.
 
 - **Whitelist System**
   - Designed for private servers only.
   - When whitelist-only mode is enabled, only players marked as whitelisted are allowed to connect to the server.
   - You can pre-register players using the command: `.pls addwhitelist <SteamID> <KnownAs>`.
-  - Blacklisted players are always blocked, even if they match the whitelist requirement.
+  - Banned players are always blocked, even if they match the whitelist requirement.
 
 - **Teleport Points**
   - Admins can create teleport slots.
@@ -253,24 +253,24 @@ Server-side V Rising utility mod that adds player services such as player info, 
   - Shortcut: *.pls rka <Name/SteamID>*
   - Example: *.pls rka 1234567890*
 
-#### Blacklist 🔒 *Admin only*
-- `.pls addblacklist <Name/SteamID>`
-  - Add a player to the blacklist and kick them.
-  - Shortcut: *.pls abl <Name/SteamID>*
-  - Example: *.pls abl Del*
+#### Banlist 🔒 *Admin only*
+- `.pls ban <Name/SteamID>`
+  - Ban a player and kick them.
+  - Shortcut: *.pls b <Name/SteamID>*
+  - Example: *.pls b Del*
 
-- `.pls removeblacklist <Name/SteamID>`
-  - Remove a player from the blacklist.
-  - Shortcut: *.pls rbl <Name/SteamID>*
-  - Example: *.pls rbl Del*
+- `.pls unban <Name/SteamID>`
+  - Unban a player.
+  - Shortcut: *.pls ub <Name/SteamID>*
+  - Example: *.pls ub Del*
 
-- `.pls showblacklist`
-  - Show all blacklisted players.
-  - Shortcut: *.pls sbl*
+- `.pls banlist`
+  - Show all banned players.
+  - Shortcut: *.pls bl*
 
-- `.pls helpblacklist`
-  - Show blacklist commands.
-  - Shortcut: *.pls hbl*
+- `.pls banhelp`
+  - Show ban commands.
+  - Shortcut: *.pls bh*
 
 #### Whitelist 🔒 *Admin only*
 - `.pls addwhitelist <SteamID> <KnownAs>`
@@ -375,7 +375,7 @@ It may include:
 - **Last online time**
 - **Last DailyKit claim**
 - **StarterKit claim**
-- **Blacklist status**
+- **Ban status**
 - **Whitelist status**
 - **Aura ownership and active states**
 
