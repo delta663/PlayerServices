@@ -7,7 +7,7 @@ namespace PlayerServices.Commands;
 internal static class PlayerProfileCommands
 {
     [Command("checkplayer", shortHand: "cp", description: "Check a player profile by In-Game Name or SteamID.", adminOnly: true)]
-    public static void CheckByPlayerNameCommand(ChatCommandContext ctx, string nameOrSteamId)
+    public static void CheckByPlayerNameCommand(ChatCommandContext ctx, string nameOrSteamId = "")
     {
         if (string.IsNullOrWhiteSpace(nameOrSteamId))
         {
@@ -19,7 +19,7 @@ internal static class PlayerProfileCommands
     }
 
     [Command("checkknownas", shortHand: "cka", description: "Find player profiles by Known As.", adminOnly: true)]
-    public static void CheckByKnownAsCommand(ChatCommandContext ctx, string knownAs)
+    public static void CheckByKnownAsCommand(ChatCommandContext ctx, string knownAs = "")
     {
         if (string.IsNullOrWhiteSpace(knownAs))
         {
@@ -31,7 +31,7 @@ internal static class PlayerProfileCommands
     }
 
     [Command("addknownas", shortHand: "aka", description: "Set a player's Known As.", adminOnly: true)]
-    public static void SetKnownAsCommand(ChatCommandContext ctx, string nameOrSteamId, string knownAs)
+    public static void SetKnownAsCommand(ChatCommandContext ctx, string nameOrSteamId = "", string knownAs = "")
     {
         if (string.IsNullOrWhiteSpace(nameOrSteamId) || string.IsNullOrWhiteSpace(knownAs))
         {
@@ -42,7 +42,7 @@ internal static class PlayerProfileCommands
     }
 
     [Command("removeknownas", shortHand: "rka", description: "Remove Known As from a player profile.", adminOnly: true)]
-    public static void RemoveKnownAsCommand(ChatCommandContext ctx, string nameOrSteamId)
+    public static void RemoveKnownAsCommand(ChatCommandContext ctx, string nameOrSteamId = "")
     {
         if (string.IsNullOrWhiteSpace(nameOrSteamId))
         {
