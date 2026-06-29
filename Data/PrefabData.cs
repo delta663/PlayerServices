@@ -14,6 +14,8 @@ internal static class PrefabData
 
     public static readonly PrefabGUID Observe = new PrefabGUID(1880224358);
 
+    public static readonly PrefabGUID TombCoffinSpawn = new PrefabGUID(722466953);
+
     public static readonly PrefabGUID SpellPowerPotion = new PrefabGUID(-1591827622);
     public static readonly PrefabGUID PhysicalPowerPotion = new PrefabGUID(-1591883586);
     public static readonly PrefabGUID HolyResistancePotion = new PrefabGUID(2099221856);
