@@ -56,7 +56,6 @@ internal static class WebhookService
         catch (OperationCanceledException) 
         {
             Core.Log.LogInfo("[Webhook] Request timeout. The message should already be in Discord.");
-            // ส่งค่า true กลับไปถือว่าสำเร็จ เพราะข้อมูลมักจะถึง Discord แล้ว
             return (true, "Timeout ignored");
         }
         // ------------------------------------------------------------------------
