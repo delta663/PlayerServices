@@ -50,7 +50,7 @@ internal static class WelcomeService
             if (Plugin.onlyWhitelistEnable.Value && (cache == null || !cache.IsWhitelisted))
                 return;
 
-            if (cache != null && cache.IsBlacklisted)
+            if (cache != null && cache.IsBanned)
                 return;
 
             string playerName = user.CharacterName.ToString();
