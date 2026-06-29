@@ -13,7 +13,7 @@ internal class PlayerCacheData
     public long LastOnlineTicks { get; set; } = 0;
     public string LastDailyKitClaim { get; set; } = string.Empty;
     public bool HasReceivedStarterKit { get; set; } = false;
-    public bool IsBlacklisted { get; set; } = false;
+    public bool IsBanned { get; set; } = false;
     public bool IsWhitelisted { get; set; } = false;
     public List<PlayerAuraData> Auras { get; set; } = new();
 }
