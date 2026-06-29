@@ -15,18 +15,6 @@ internal static class ClanService
 {
 	private const float AUTO_JOIN_DELAY_SECONDS = 1f;
 
-	public static void ReplyHelp(ChatCommandContext ctx)
-	{
-		var sb = new StringBuilder();
-
-			sb.AppendLine("<color=yellow>Clan Commands:</color>");
-			sb.AppendLine("<color=green>.clan forcecreate <player></color> or <color=green>.c fc</color>");
-			sb.AppendLine("<color=green>.clan forcejoin <playerA> <playerB></color> or <color=green>.c fj</color>");
-			sb.AppendLine("<color=green>.clan forceleave <player></color> or <color=green>.c fl</color>");
-			
-		ctx.Reply(sb.ToString().TrimEnd());
-	}
-
 	public static void CreateClanForPlayer(ChatCommandContext ctx, string playerName)
 	{
 		if (!TryFindPlayer(ctx, playerName, out var userEntity, out var charEntity, out var user, out string characterName))
@@ -45,7 +33,7 @@ internal static class ClanService
 			return;
 		}
 
-		ctx.Reply($"Force create requested for <color=white>{characterName}</color>: <color=#87CEFA>{clanName}</color>.");
+		ctx.Reply($"Force create clan for <color=white>{characterName}</color>: <color=#87CEFA>{clanName}</color>.");
 	}
 
 	public static void JoinPlayerToPlayerClan(ChatCommandContext ctx, string playerAName, string playerBName)
@@ -520,5 +508,17 @@ internal static class ClanService
 		{
 			Core.LogException(e);
 		}
+	}
+
+	public static void ReplyHelp(ChatCommandContext ctx)
+	{
+		var sb = new StringBuilder();
+
+			sb.AppendLine("<color=yellow>Clan Commands:</color>");
+			sb.AppendLine("<color=green>.clan forcecreate <player></color> or <color=green>.c fc</color>");
+			sb.AppendLine("<color=green>.clan forcejoin <playerA> <playerB></color> or <color=green>.c fj</color>");
+			sb.AppendLine("<color=green>.clan forceleave <player></color> or <color=green>.c fl</color>");
+			
+		ctx.Reply(sb.ToString().TrimEnd());
 	}
 }
